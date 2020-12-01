@@ -7,7 +7,7 @@ const { execPath } = require('process');
 const app = express();
 const port = 3001;
 const route = require('./routes');
-const conn = require('./app/config/db')
+//const conn = require('./app/config/db')
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan('combined'));
@@ -33,7 +33,7 @@ app.set('views', path.join(__dirname, 'resources' , 'views'));
 
 //Routes init
 route(app);
-conn.connecting;
+//conn.connecting;
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);

@@ -4,8 +4,8 @@ const router = express.Router();
 
 const Customerontroller = require('../app/controllers/CustomerController');
 
+router.post('/singin/store', Customerontroller.store )
 router.get('/singin', Customerontroller.creat);
-router.post('/store', Customerontroller.store )
 
 
 

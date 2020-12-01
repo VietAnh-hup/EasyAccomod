@@ -1,15 +1,42 @@
-const mysql = require('mysql');
-const connect = mysql.createConnection({
+const { Sequelize } = require('sequelize');
+const sequelize = new Sequelize('easyaccomod2' , 'root' , '' ,{
     host: 'localhost',
-    user: 'root',
-    password: '',
-    // database: 'classicmodels',
-    database: 'easyaccomod'
-})
+    dialect: 'mysql'|'mariadb'|'sqlite'|'postgres'|'mssql',
 
-const connecting = connect.connect(function (err){
-    if (err) throw err.stack
-    else console.log('Connect successfully')
-})
+        pool: {
+            max: 5,
+            min: 0,
+            idle: 10000
+        },
+} )
 
-module.exports = {connect , connecting  };
+
+
+
+
+
+
+
+
+
+// const mysql = require('mysql');
+
+
+// const connect = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: '',
+//     // database: 'classicmodels',
+//     database: 'easyaccomod2',
+//     multipleStatements: true
+// })
+
+// const connecting = connect.connect(function (err){
+//     if (err) throw err.stack
+//     else console.log('Connect successfully')
+// })
+
+// //const end = connect.end();
+
+
+// module.exports = {connect, connecting };

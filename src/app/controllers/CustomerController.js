@@ -4,13 +4,16 @@ const customer = require('../model/customer')
 class CustomerController {
     // GET /product/:name
     creat(req, res) {
-        res.render('product/singin')
+        // res.render('customer/login')
+        //customer.customerCreat(req.body , res)
+        res.render( 'customer/singin', {layout: false})
     }
 
     store(req, res)
     {
-        customer.customerCreat(req)
-        res.send(req.body)
+        console.log(req.body)
+        customer.customerCreat(req.body, res)
+        res.send('1')
     }
 }
 
