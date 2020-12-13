@@ -7,6 +7,8 @@ const { execPath } = require('process');
 const app = express();
 const port = 3001;
 const route = require('./routes');
+const cookie_parser = require('cookie-parser')
+
 //const conn = require('./app/config/db')
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -19,7 +21,7 @@ app.use(
 
 /// AJAX, fetch, XMLHttpRequest
 app.use(express.json());
-
+app.use(cookie_parser('luongvietanh'))
 // templace
 
 app.engine(

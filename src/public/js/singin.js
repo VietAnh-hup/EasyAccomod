@@ -38,7 +38,8 @@ var repassword = inputRePassword.value;
 
 
 var regeEmail = /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*(\.\w{2,})+$/;
-var regeName = /^(?!.*(\d|\[|\]|\{|\}|\\|\||\/|\$|\*|\^|\+|\.|\?|#|%|,|~|=|,|<|>|;|'|:|"|@)).*$/
+var regeName = /^([A-Za-z0-9]+)(\s([A-Za-z0-9])+)*$/
+//var regeName1 = /^(?!.*(\d|\[|\]|\{|\}|\\|\||\/|\$|\*|\^|\+|\.|\?|#|%|,|~|=|,|<|>|;|'|:|"|@)).*$/
 var regePhone = /^\d{10}$/
 var regePassword = /^((?!.*\s).+){8,}$/
 if (!fullname.match(regeName) || !email.match(regeEmail) || !phone.match(regePhone) || !password.match(regePassword) || password != repassword)
@@ -68,7 +69,7 @@ else{
     cus.email = email;
     cus.phone = phone;
     cus.password = password;
-    fetch('http://localhost:3001/customer/singin/store', {
+    fetch('http://localhost:3001/customer/register/store', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
