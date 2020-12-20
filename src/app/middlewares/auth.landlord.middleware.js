@@ -5,18 +5,18 @@ const query = require('../config/db/query');
 module.exports.authClassify = async function(req, res, next)
 {
     const conn = await connection(dbConfig).catch(e => {});
-    var customer_id = parseInt(req.signedCookies.customer_id)
+    var landlord_id = parseInt(req.signedCookies.landlord_id)
     var sessions = req.cookies.sessions;
-    if (sessions == 'customer')
+    if (sessions == 'landlords')
     {
-        sql = "SELECT COUNT(*) AS total FROM customer WHERE customer_id = ?"
-        var resualts = await query(conn,sql , [customer_id]);
+        sql = "SELECT COUNT(*) AS total FROM landlords WHERE landlord_id = ?"
+        var resualts = await query(conn,sql , [landlord_id]);
         //console.log(resualts)
         if (resualts[0].total == 0){
             res.send()
             return;
         }
-        res.locals.customer_id = customer_id;
+        res.locals.landlord_id = landlord_id;
         next()
     }
     

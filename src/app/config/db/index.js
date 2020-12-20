@@ -23,15 +23,7 @@
 
 const mysql = require('mysql');
 
-var params = {
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        // database: 'classicmodels',
-        database: 'easyaccomod2',
-        multipleStatements: true
 
-}
 
 module.exports = async (params) => new Promise(
     (resolve, reject) => {

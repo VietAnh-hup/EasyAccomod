@@ -37,7 +37,14 @@ class resgisterCustomerController{
             sql = "INSERT INTO customer (fullName , phone , email , password) VALUES (?,?,?,?);"
             resualts = await query(conn, sql, [req.body.fullname, req.body.phone,req.body.email,password]).catch(console.log);
             //console.log(resualts);
+            res.send();
+            conn.end()
+            return;
         }
+        else{
+            res.send(duplicateErr);
+        }
+        
     }
 }
 

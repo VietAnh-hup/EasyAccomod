@@ -4,15 +4,17 @@ const router = express.Router();
 
 
 const Customerontroller = require('../app/controllers/CustomerController');
-const RegisterCustomerController = require('../app/controllers/registerCustomerController')
-const customerCreate = require('../app/validate/custumer.validate')
 const AuthCustomer = require('../app/middlewares/auth.customer.middleware')
+const customerCreate = require('../app/validate/custumer.validate')
+const RegisterCustomerController = require('../app/controllers/registerCustomerController')
+const AuthClassify = require('../app/middlewares/auth.classify.middleware')
 
-
-router.post('/register/store', customerCreate.postCreate, RegisterCustomerController.store );
+//CREATE customer
+router.post('/register/store', customerCreate.postCreate, AuthClassify.checkDuplicate , RegisterCustomerController.store );
 router.get('/register', RegisterCustomerController.creat);
-router.post('/like' , AuthCustomer.authCustomer, Customerontroller.likeNews)
-router.post('/comment' ,AuthCustomer.authCustomer, Customerontroller.comment )
+router.post('/like' ,AuthCustomer.authClassify , Customerontroller.likeNews)
+router.post('/comment' , AuthCustomer.authClassify ,Customerontroller.comment )
+
 
 
 

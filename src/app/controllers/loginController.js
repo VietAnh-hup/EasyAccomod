@@ -11,20 +11,26 @@ class loginCustomer{
 
     async login(req , res)
     {
+        console.log(req.body.form)
+        if (req.body.phone){
+
         const conn = await connection(dbConfig).catch(e => {});
         var sql = "SELECT * FROM classify WHERE phone_number = ?"
         var resualts =  await query(conn, sql, [req.body.phone]).catch(console.log);
+        //console.log(resualts)
         if (!resualts[0].phone_number){
             res.render('login/login', {
                 err : 'Tài khoản không tồn tại'
             });
             return;
         }
+        //console.log(1)
 
         var Description = resualts[0].Description ;
         //console.log(Description);
         sql = "SELECT * FROM " +Description +  " WHERE phone = ? "
         resualts = await query(conn, sql, [req.body.phone]).catch(console.log);
+        //console.log(resualts)
         var password = md5(req.body.password);
         if (password !== resualts[0].password )
         {
@@ -33,7 +39,9 @@ class loginCustomer{
             });
             return;
         }
+        
         if (password === resualts[0].password){
+            //console.log(Description)
             if (Description == 'customer')
             {
             res.cookie('customer_id' ,resualts[0].customer_id ,{
@@ -45,6 +53,7 @@ class loginCustomer{
             }
             if (Description == 'landlords')
             {
+                
                 if(resualts[0].accuracy == 0)
                 {
                     res.render('login/login', {
@@ -73,6 +82,9 @@ class loginCustomer{
         }
 
     }
+    res.send();
+    }
+
 }
 
 module.exports = new loginCustomer;
