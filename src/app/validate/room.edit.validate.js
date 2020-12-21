@@ -10,7 +10,7 @@ function deletedImage(req){
         }
 }
 
-module.exports.postCreate = function (req , res , next){
+module.exports.putEdit = function (req , res , next){
     var rageHouse_number = /^([0-9]+)(([A-Z])*)*$/;
     console.log(!req.body.house_number.match(rageHouse_number))
     if (req.body.house_number){
@@ -106,18 +106,7 @@ module.exports.postCreate = function (req , res , next){
         return;
     }
     //console.log(1)
-    if(req.files.length < 3 )
-    {
-        for(var i = 0 ; i < req.files.length ; i ++)
-        {
-            fs.unlink( req.files[i].path , function (err) {
-                if (err) throw err;
-                console.log('File deleted!');
-              });
-        }
-        res.status(404).end();
-        return;
-    }
+    
     
     //console.log(1);
     

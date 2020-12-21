@@ -6,6 +6,10 @@ module.exports.postCreate = function (req, res , next )
         var regePhone = /^\d{10}$/
         var regePassword = /^((?!.*\s).+){8,}$/
         var regeCitizen_id = /^((?!.*\s).+){12}$/
+        if ( !req.body.fullname || !req.body.email || !req.body.phone || !req.body.citizen_id){
+            res.status(404).end();
+            return;
+        }
         if ( !req.body.fullname.match(regeName) || !req.body.email.match(regeEmail) || !req.body.phone.match(regePhone) || !req.body.citizen_id.match(regeCitizen_id) || !req.body.address != '' || !req.body.address ){
             //console.log('123');
             res.status(404).end();

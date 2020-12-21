@@ -4,6 +4,10 @@ const query = require('../config/db/query');
 
 module.exports.authClassify = async function(req, res, next)
 {
+    if (!req.signedCookies.landlord_id){
+            res.send()
+            return;
+    }
     const conn = await connection(dbConfig).catch(e => {});
     var landlord_id = parseInt(req.signedCookies.landlord_id)
     var sessions = req.cookies.sessions;
