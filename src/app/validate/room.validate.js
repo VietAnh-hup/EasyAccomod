@@ -1,6 +1,7 @@
 const fs = require('fs')
 
 function deletedImage(req){
+    if (req.files){
     for(var i = 0 ; i < req.files.length ; i ++)
         {
             fs.unlink( req.files[i].path , function (err) {
@@ -8,11 +9,12 @@ function deletedImage(req){
                 console.log('File deleted!');
               });
         }
+    }
 }
 
 module.exports.postCreate = function (req , res , next){
     var rageHouse_number = /^([0-9]+)(([A-Z])*)*$/;
-    console.log(!req.body.house_number.match(rageHouse_number))
+    //console.log(!req.body.house_number.match(rageHouse_number))
     if (req.body.house_number){
         if (!req.body.house_number.match(rageHouse_number)){
             console.log(req.body)
@@ -106,6 +108,10 @@ module.exports.postCreate = function (req , res , next){
         return;
     }
     //console.log(1)
+    if(!req.body){
+        res.status(404).end();
+        return;
+    }
     if(req.files.length < 3 )
     {
         for(var i = 0 ; i < req.files.length ; i ++)

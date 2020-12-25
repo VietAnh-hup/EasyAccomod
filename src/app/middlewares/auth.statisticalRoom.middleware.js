@@ -1,9 +1,8 @@
 const dbConfig = require('../config/db/dbConfig');
 const connection = require('../config/db/index');
-const query = require('../config/db/query');
+const query = require('../config/db/query')
 
-module.exports.authRomm = async function(req , res , next)
-{
+module.exports.authStatisticalRoom = async function(req , res , next){
     if (!req.body.room_id){
         res.send({
             Err: 'Thiếu tham số' 
@@ -30,14 +29,14 @@ module.exports.authRomm = async function(req , res , next)
         })
         return;
     }
-    //console.log(1);
-    if (resualts[0].confirm_status == 1){
+    if (resualts[0].confirm_status != 1){
         conn.end();
         res.send({
-            Err: 'Bài viết này không được phép chỉnh sửa' 
+            Err: 'Bài viết này chưa được đăng' 
         })
         return;
     }
     //console.log(1);
     next();
+    
 }

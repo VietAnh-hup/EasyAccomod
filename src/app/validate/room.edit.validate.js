@@ -1,6 +1,7 @@
 const fs = require('fs')
 
 function deletedImage(req){
+    if(req.files){
     for(var i = 0 ; i < req.files.length ; i ++)
         {
             fs.unlink( req.files[i].path , function (err) {
@@ -8,11 +9,12 @@ function deletedImage(req){
                 console.log('File deleted!');
               });
         }
+    }
 }
 
 module.exports.putEdit = function (req , res , next){
     var rageHouse_number = /^([0-9]+)(([A-Z])*)*$/;
-    console.log(!req.body.house_number.match(rageHouse_number))
+    //console.log(!req.body.house_number.match(rageHouse_number))
     if (req.body.house_number){
         if (!req.body.house_number.match(rageHouse_number)){
             console.log(req.body)
@@ -101,6 +103,11 @@ module.exports.putEdit = function (req , res , next){
         return;
     }
     if(!req.body.time_life || !req.body.time_life.match(/^([0-9]+){1,11}$/)){
+        deletedImage(req);
+        res.status(404).end()
+        return;
+    }
+    if(!req.body.imageDel){
         deletedImage(req);
         res.status(404).end()
         return;

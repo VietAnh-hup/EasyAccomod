@@ -4,7 +4,26 @@ const query = require('../config/db/query')
 const fs = require('fs')
 
 
-
+module.exports.costNotifi = async function(req , res){
+    if(!req.body.time_life || !req.body.time_life.match(/^([0-9]+){1,11}$/)){
+        deletedImage(req);
+        res.status(404).end()
+        return;
+    }
+    if (!(req.body.cycile == 'week' || req.body.cycile == 'month' || req.body.cycile == 'year' || req.body.cycile == 'quarter'))
+    {
+        deletedImage(req);
+        res.status(404).end()
+        return;
+    }
+    const conn = await connection(dbConfig).catch(e => {});
+    var sql = "SELECT cost FROM cost_service WHERE cycile = ?"
+    var resualts = await query(conn, sql , req.body.cycile);
+    var cost_service = parseInt(req.body.time_life)*parseInt(resualts[0].cost);
+    res.send({
+        cost_service: cost_service
+    })
+}
 module.exports.createRoom = async function(req , res )
 {
 
