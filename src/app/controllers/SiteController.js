@@ -125,10 +125,12 @@ class SiteController {
             //console.log(resualts)
             //console.log(Intl.DateTimeFormat('en-US').format(resualts[0].expiration_date))
             for (let i = 0 ; i < resualts.length ; i ++){
-                resualts[i].creatDate = Intl.DateTimeFormat('en-US').format(resualts[i].creatDate)
-                resualts[i].confirm_date = Intl.DateTimeFormat('en-US').format(resualts[i].confirm_date)
-                resualts[i].expiration_date = Intl.DateTimeFormat('en-US').format(resualts[i].expiration_date)
+                resualts[i].creatDate = Intl.DateTimeFormat('en-US').format(resualts[i].creatDate);
+                resualts[i].confirm_date = Intl.DateTimeFormat('en-US').format(resualts[i].confirm_date);
+                resualts[i].expiration_date = Intl.DateTimeFormat('en-US').format(resualts[i].expiration_date);
+                resualts[i].image = JSON.parse(resualts[i].image)
             }
+            console.log(resualts[0]);
             res.send(resualts);
         }
         else{

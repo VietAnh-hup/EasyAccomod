@@ -70,9 +70,9 @@ module.exports.extendRoom = async function(req , res){
     sql = "SELECT extend_status FROM extend WHERE room_id = ?";
     resualts = await query(conn, sql , [req.body.room_id]).catch(console.log);
     for (let i = 0  ; i < resualts.lenght ; i ++){
-        if (resualts[i].extend_status == 'pending'){
+        if (resualts[i].extend_status == 'pending' || resualts[i].extend_status == 'not browse'){
             res.send({
-                err: "Bài viết này đang được xử lí"
+                err: "Bài viết này đang được xử lí hoặc không được duyệt"
             }).end();
             return;
         }

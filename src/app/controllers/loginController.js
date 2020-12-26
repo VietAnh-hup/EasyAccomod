@@ -48,7 +48,9 @@ class loginCustomer{
                 signed: true
             })
             res.cookie('sessions', Description )
-            res.render('home');
+            res.send({
+                data : 'Customer'
+            })
             return;
             }
             if (Description == 'landlords')
@@ -66,7 +68,10 @@ class loginCustomer{
                     signed: true
                 })
                     res.cookie('sessions', Description )
-                    res.render('landlord/landlord') 
+                    res.send({
+                        data: 'landlord'
+                    })
+                    //res.render('landlord/landlord') 
                     return;
                 }
             }
@@ -76,8 +81,10 @@ class loginCustomer{
                         signed: true
                     })
                     res.cookie('sessions', Description )
-                    res.render('admin/admin')
-                    return;
+                    res.send({
+                        data: 'admin'
+                    })
+                    //return res.redirect('admin');
             }
         }
 

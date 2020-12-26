@@ -14,7 +14,6 @@ function deletedImage(req){
 
 module.exports.postCreate = function (req , res , next){
     var rageHouse_number = /^([0-9]+)(([A-Z])*)*$/;
-    //console.log(!req.body.house_number.match(rageHouse_number))
     if (req.body.house_number){
         if (!req.body.house_number.match(rageHouse_number)){
             console.log(req.body)
@@ -50,7 +49,7 @@ module.exports.postCreate = function (req , res , next){
         res.status(404).end()
         return;
     }
-    
+    console.log('Test')
     if (!req.body.cost_room || !req.body.cost_room.match(/^([0-9]+)$/) || !req.body.acreage ||  !req.body.acreage.match(/^([0-9]+)$/)){
         deletedImage(req);
         res.status(404).end()
@@ -68,7 +67,7 @@ module.exports.postCreate = function (req , res , next){
         res.status(404).end()
         return;
     }
-   
+    
     
     // if(!(req.body. == 'Có' || req.body.water_hot == 'Không'))
     // {
@@ -107,8 +106,8 @@ module.exports.postCreate = function (req , res , next){
         res.status(404).end()
         return;
     }
-    //console.log(1)
-    if(!req.body){
+    
+    if(!req.files){
         res.status(404).end();
         return;
     }
