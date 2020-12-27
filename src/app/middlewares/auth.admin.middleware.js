@@ -5,7 +5,10 @@ const query = require('../config/db/query');
 module.exports.authClassify = async function(req, res, next)
 {
     if (!req.signedCookies.admin_id){
-            res.send()
+            res.send({
+                err: 'Thất bại'
+            }
+            )
             return;
     }
     const conn = await connection(dbConfig).catch(e => {});

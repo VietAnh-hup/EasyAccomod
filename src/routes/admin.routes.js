@@ -24,6 +24,11 @@ router.put('/readAllNotification' , AuthAdmin.authClassify, admincontroller.read
 router.post('/statisticalView', AuthAdmin.authClassify , admincontroller.adminStatisticalView)
 router.post('/statisticalLike', AuthAdmin.authClassify , admincontroller.adminStatisticalLike)
 router.post('/statisticalCreate', AuthAdmin.authClassify , admincontroller.adminStatisticalCreate)
+router.post('/statisticalSearch', AuthAdmin.authClassify , admincontroller.adminStatisticalSearch)
+router.post('/statisticalCost', AuthAdmin.authClassify , admincontroller.adminStatisticalCost)
+router.post('/statisticalTime', AuthAdmin.authClassify , admincontroller.adminStatisticalTime)
+router.get('/statisticalYearView', AuthAdmin.authClassify , admincontroller.adminStatisticalYearView)
+
 router.get('', AuthAdmin.authClassify ,admincontroller.showAdmin);
 
 module.exports = router;

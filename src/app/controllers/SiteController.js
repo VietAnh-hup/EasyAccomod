@@ -10,6 +10,7 @@ class SiteController {
         if (req.query.searchValue)
         {
             var sql = "SELECT * FROM room WHERE confirm_status = 1 AND expiration_date >= CURDATE() AND "
+            var sql2 = "INSERT INTO search (search_value , cost_room , search_date) VALUES (? , ? ,  CURRENT_DATE() ) "
             var searchValue = '%' + req.query.searchValue + '%';
             console.log(req.query.searchValue)
             var public_places = '%%';
@@ -97,16 +98,46 @@ class SiteController {
             {
                 sql = sql + "AND status = 'Không chung chủ' "
             }
-            if(req.query.cost_room_max != '' && req.query.cost_room_max)
-            {
-                var cost_room_max = parseInt(req.query.cost_room_max)
-                sql = sql + "AND cost_room <= " + cost_room_max + ' ';
+
+            if(req.query.cost && req.query.cost != ''){
+                if (req.query.cost == '> 10000000'){
+                    sql = sql + 'AND cost_room > 10000000 ';
+                    await query(conn, sql2 , [req.body.searchValue , req.body.cost]).catch(console.log)
+
+                }
+                if (req.query.cost == '0 - 3000000'){
+                    sql = sql + 'AND cost_room <= 3000000 '
+                    await query(conn, sql2 , [req.body.searchValue , req.body.cost]).catch(console.log)
+                }
+                if (req.query.cost == '3000000 - 5000000'){
+                    sql = sql + 'AND cost_room >= 3000000 AND cost_room <= 5000000 '
+                    await query(conn, sql2 , [req.body.searchValue , req.body.cost]).catch(console.log)
+                }
+                if (req.query.cost == '5000000 - 7000000'){
+                    sql = sql + 'AND cost_room >= 5000000 AND cost_room <= 7000000 '
+                    await query(conn, sql2 , [req.body.searchValue , req.body.cost]).catch(console.log)
+                }
+                if (req.query.cost == '7000000 - 10000000'){
+                    sql = sql + 'AND cost_room >= 7000000 AND cost_room <= 10000000 '
+                    await query(conn, sql2 , [req.body.searchValue , req.body.cost]).catch(console.log)
+                }
             }
-            if(req.query.cost_room_min != '' && req.query.cost_room_min)
-            {
-                var cost_room_min = parseInt(req.query.cost_room_min)
-                sql = sql + "AND cost_room >= " + cost_room_min + " ";
+            //console.log((req.query.cost))
+            if(!req.query.cost || req.query.cost == 'Mọi mức giá' ){
+                console.log('test')
+                await query(conn, sql2 , [req.query.searchValue , 'Mọi mức giá']).catch(console.log)
             }
+            
+            // if(req.query.cost_room_max != '' && req.query.cost_room_max)
+            // {
+            //     var cost_room_max = parseInt(req.query.cost_room_max)
+            //     sql = sql + "AND cost_room <= " + cost_room_max + ' ';
+            // }
+            // if(req.query.cost_room_min != '' && req.query.cost_room_min)
+            // {
+            //     var cost_room_min = parseInt(req.query.cost_room_min)
+            //     sql = sql + "AND cost_room >= " + cost_room_min + " ";
+            // }
             if(req.query.acreage_max != '' && req.query.acreage_max)
             {
                 var acreage_max = parseInt(req.query.acreage_max)
@@ -154,33 +185,38 @@ class SiteController {
 
     async getRoom(req , res){
         
-        if (!req.body.room_id){
-            res.status(404).end();
+        if (!req.params.room_id){
+            res.render('404', {layout: false})
             return;
         }
+        console.log(req.params.room_id)
         const conn = await connection(dbConfig).catch(e => {});
-        var sql = "SELECT * FROM room WHERE room_id = ? AND confirm_status = 1 AND expiration_date >= CURRENT_DATE() ;"
-        var resualts = await query(conn, sql , [req.body.room_id]);
-        if (!resualts[0].room_id )
+        var sql = "SELECT r.* , COUNT(*) FROM room r JOIN customer_like cl ON r.room_id = cl.room_id  WHERE r.room_id = ? AND confirm_status = 1 AND expiration_date >= CURRENT_DATE();"
+        var resualts = await query(conn, sql , [req.params.room_id]).catch(console.log());
+        if (!resualts[0] )
         {
-            res.send({
-                err: "Bài viết này không tồn tại"
-            }).end();
+            // res.send({
+            //     err: "Bài viết này không tồn tại"
+            // }).end();
+            res.render('404', {layout: false})
             return;
         }
-        await query(conn, "CALL insert_view(?);" , [req.body.room_id]);
+        await query(conn, "CALL insert_view(?);" , [req.params.room_id]).catch(console.log());
         sql = "UPDATE room SET view_num = view_num + 1";
         await query(conn , sql , [req.body.room_id]);
                 resualts[0].creatDate = Intl.DateTimeFormat('en-US').format(resualts[0].creatDate)
                 resualts[0].confirm_date = Intl.DateTimeFormat('en-US').format(resualts[0].confirm_date)
                 resualts[0].expiration_date = Intl.DateTimeFormat('en-US').format(resualts[0].expiration_date)
-        res.send(resualts).end();
+        res.render('room_detail', {
+            room_detail : resualts});
+        //res.send(resualts).end();
+        //res.send();
 
     }
 
     async getRoomLike(req , res){
         if (!req.body.room_id){
-            res.status(404).end();
+            res.render('404', {layout: false})
             return;
         }
         const conn = await connection(dbConfig).catch(e => {});
@@ -199,6 +235,19 @@ class SiteController {
         res.send({
             total_like: resualts[0].total_like
         }).end();
+    }
+
+    async getComments(req , res){
+        if (!req.params.room_id){
+            res.render('404', {layout: false})
+            return;
+        }
+        //console.log(req.params.room_id)
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT c.fullname , cc.comment_content FROM customer_comment cc JOIN customer c ON cc.customer_id = c.customer_id JOIN room r ON cc.room_id = r.room_id WHERE cc.room_id = ? AND r.confirm_status = 1 AND r.expiration_date >= CURRENT_DATE();"
+        var resualts = await query(conn, sql , [req.params.room_id]).catch(console.log);
+        res.send(resualts)
+
     }
 }
 module.exports = new SiteController();

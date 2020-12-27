@@ -6,9 +6,10 @@ const siteController = require('../app/controllers/SiteController');
 
 router.get('/search', siteController.search);
 router.get('/city/:city_name', siteController.getCity);
-router.post('/getRoom' , siteController.getRoom);
+//router.get('/getRoom/:room_id' , siteController.getRoom);
+router.get('/getRoom/:room_id' , siteController.getRoom);
 router.post('/getTotalLike', siteController.getRoomLike)
-
+router.get('/getComment/:room_id' , siteController.getComments)
 
 router.get('/' , siteController.show)
 //router.use('/:id' , siteController.product)

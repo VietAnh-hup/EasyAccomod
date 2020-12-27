@@ -12,7 +12,7 @@ class loginCustomer{
     async login(req , res)
     {
         console.log(req.body.form)
-        if (req.body.phone){
+        if (req.body.phone && req.body.password){
 
         const conn = await connection(dbConfig).catch(e => {});
         var sql = "SELECT * FROM classify WHERE phone_number = ?"
@@ -49,7 +49,8 @@ class loginCustomer{
             })
             res.cookie('sessions', Description )
             res.send({
-                data : 'Customer'
+                data : 'Customer',
+                fullname: resualts[0].fullname
             })
             return;
             }
@@ -69,7 +70,8 @@ class loginCustomer{
                 })
                     res.cookie('sessions', Description )
                     res.send({
-                        data: 'landlord'
+                        data: 'landlord',
+                        fullname: resualts[0].fullname
                     })
                     //res.render('landlord/landlord') 
                     return;
@@ -82,7 +84,8 @@ class loginCustomer{
                     })
                     res.cookie('sessions', Description )
                     res.send({
-                        data: 'admin'
+                        data: 'admin',
+                        fullname: resualts[0].fullname
                     })
                     //return res.redirect('admin');
             }

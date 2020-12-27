@@ -76,6 +76,20 @@ class CustomerController {
             return;
         }
     }
+
+    async getComments(req , res){
+        if (!req.params.room_id){
+            res.render('404', {layout: false})
+            return;
+        }
+        //console.log(req.params.room_id)
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT c.fullname , cc.comment_contend FROM customer_comment cc JOIN customer c ON cc.customer_id = c.customer_id WHERE r.room_id = ? AND confirm_status = 1 AND expiration_date >= CURRENT_DATE();"
+        var resualts = await query(conn, sql , [req.params.room_id]).catch(console.log);
+        res.send(resualts)
+
+    }
+        
 }
 
 module.exports = new CustomerController();
