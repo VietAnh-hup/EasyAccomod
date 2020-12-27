@@ -36,11 +36,11 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
-    "husky": "^4.3.0",
-    "lint-staged": "^10.5.1",
+    "husky": "^4.3.6",
+    "lint-staged": "^10.5.3",
     "morgan": "^1.10.0",
     "node-sass": "^5.0.0",
     "nodemon": "^2.0.6",
-    "prettier": "^2.1.2"
+    "prettier": "^2.2.1"
   }
 }
