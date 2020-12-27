@@ -5,15 +5,27 @@ const md5 = require('md5')
 
 
 class adminController{
-    getAdmin(req, res )
+    showAdmin(req, res )
     {
         //console.log(req.cookies.customer_id)
         res.render('admin/admin')
     }
 
+    manageLandlord(req , res){
+        res.render('admin/manage_acc',{layout : false});
+    }
+
+    manageRoom(req , res){
+        res.render('admin/manage_post',{layout : false});
+    }
+
+    manageExtend(req , res){
+        res.render('admin/updatetime_post',{layout : false});
+    }
+
     async getLandlord(req , res){
         const conn = await connection(dbConfig).catch(e => {});
-        var sql = "SELECT landlord_id , fullName, citizen_id, address, phone, email, accuracy , edit_status , lastUpdate  FROM landlords WHERE 1 ";
+        var sql = "SELECT landlord_id , fullName, citizen_id, address, phone, email, accuracy , edit_status , lastUpdate  FROM landlords WHERE 1  ";
         var resualts = await query(conn, sql).catch(console.log);
         for (let i = 0 ; i < resualts.length ; i ++){
             resualts[i].lastUpdate = Intl.DateTimeFormat('en-US').format(resualts[i].lastUpdate)
@@ -162,7 +174,17 @@ class adminController{
 
     }
 
-    async confirmExtendStatus(req , res ){
+    async getExtend(req , res){
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT room_id ,CONCAT(r.room_kind ,' ', r.address ) AS roomName  , l.fullName  , r.creatDate AS create_date , r.confirm_status FROM room r JOIN landlords l ON r.landlord_id = l.landlord_id WHERE r.confirm_status = 1 AND extend_status = 'pending' ORDER BY r.creatDate DESC"
+        var resualts = await query(conn, sql ).catch(console.log);
+        conn.end()
+        res.send(resualts).end();
+    }
+
+
+
+    async confirmExtend(req , res ){
         const conn = await connection(dbConfig).catch(e => {});
         var sql = "SELECT COUNT(*) total FROM extend WHERE room_id = ? AND extend_status = 'pending' ";
         var resualts = await query(conn, sql , [req.body.room_id]).catch(console.log);
@@ -199,6 +221,126 @@ class adminController{
             data: 'Xác nhận gia hạn thành công'
         });
     }
+
+    async notConfirmExtend(req , res){
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT COUNT(*) total FROM extend WHERE room_id = ? AND extend_status = 'pending' ";
+        var resualts = await query(conn, sql , [req.body.room_id]).catch(console.log);
+        if (resualts[0].total == 0 ){
+            conn.end();
+            res.send({
+                err : "Yêu cầu không xác nhận gia hạn không thể thực hiện"
+            })
+            return;
+        }
+        sql = "UPDATE extend SET confirm_date = CURRENT_DATE() , extend_status = 'not confirm' WHERE room_id = ? "
+        await query(conn, sql , [req.body.room_id]).catch(console.log);
+        conn.end();
+        res.send({
+            data: 'Không xác nhận gia hạn thành công'
+        })
+    
+    
+
+    }
+     
+
+    async getNotification(req , res){
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT notification_id , CONCAT(r.room_kind ,' ', r.address ) AS roomName , r.fill, r.amount ,  n.create_date  FROM notification n JOIN room r ON n.room_id = r.room_id WHERE n.status = 'Chưa xem' ORDER BY n.create_date DESC ";
+        var resualts = await query(conn, sql).catch(console.log);
+        for(let i = 0 ; i < resualts.length ; i ++){
+            resualts[i].create_date = Intl.DateTimeFormat('en-US').format(resualts[i].create_date);
+        }
+        res.send(resualts);
+    }
+
+    async readNotification(req , res ){
+        if (!req.body.notification_id ){
+            err : "Yêu cầu không thành công"
+        }
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "UPDATE notification SET  status = 'Đã xem' WHERE notification_id = ? "
+        await query(conn, sql , [req.body.notification_id])
+        conn.end()
+        res.send().end;
+    }
+    async readAllNotification(req , res){
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "UPDATE notification SET  status = 'Đã xem' WHERE status = 'Chưa xem' "
+        await query(conn, sql )
+        conn.end();
+        res.send().end();
+    }
+
+    async adminStatisticalView(req , res){
+        if ( !req.body.month ){
+            res.send({
+                err: "Thiếu tham số"
+            })
+            return;
+        }
+        if (parseInt(req.body.month) < 1 || parseInt(req.body.month) > 12){
+            res.send({
+                err: "Yêu cầu không thể thực hiện"
+            })
+            return;
+        }
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT CONCAT(r.room_kind , '', r.address ) AS room_name , SUM(rv.view_number) AS view_number FROM room_view rv JOIN room r ON rv.room_id = r.room_id  WHERE MONTH(rv.view_date) = ? AND YEAR(rv.view_date) = YEAR(CURRENT_DATE()) GROUP BY rv.room_id ORDER BY view_number DESC LIMIT 5 ;"
+        var resualts = await query(conn, sql , [parseInt(req.body.month)]).catch(console.log);
+        conn.end();
+        res.send(resualts).end;
+        
+    }
+
+    async adminStatisticalLike(req , res){
+        if ( !req.body.month ){
+            res.send({
+                err: "Thiếu tham số"
+            })
+            return;
+        }
+        if (parseInt(req.body.month) < 1 || parseInt(req.body.month) > 12){
+            res.send({
+                err: "Yêu cầu không thể thực hiện"
+            })
+            return;
+        }
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT CONCAT(r.room_kind , '', r.address ) AS room_name , SUM(1) AS total_like FROM customer_like cl JOIN room r ON cl.room_id = r.room_id WHERE MONTH(cl.like_date) = ? AND YEAR(cl.like_date) = YEAR(CURRENT_DATE()) GROUP BY cl.room_id ORDER BY total_like DESC LIMIT 5"
+        var resualts = await query(conn, sql , [parseInt(req.body.month)]).catch(console.log);
+        conn.end();
+        res.send(resualts).end;
+        
+    }
+
+    async adminStatisticalCreate(req , res){
+        if ( !req.body.month ){
+            res.send({
+                err: "Thiếu tham số"
+            })
+            return;
+        }
+        if (parseInt(req.body.month) < 1 || parseInt(req.body.month) > 12){
+            res.send({
+                err: "Yêu cầu không thể thực hiện"
+            })
+            return;
+        }
+        const conn = await connection(dbConfig).catch(e => {});
+        var sql = "SELECT creatDate , COUNT(*) as total_room FROM room WHERE MONTH(creatDate) = ? AND YEAR(creatDate) = YEAR(CURRENT_DATE()) GROUP BY creatDate ORDER BY total_room LIMIT 5"
+        var resualts = await query(conn, sql , [parseInt(req.body.month)]).catch(console.log);
+        conn.end();
+        for (let i = 0 ; i < resualts.length ; i ++){
+            resualts[i].creatDate = Intl.DateTimeFormat('en-US').format(resualts[i].createDate)
+        }
+        res.send(resualts).end;
+        
+    }
+
+    
+
 
     
 

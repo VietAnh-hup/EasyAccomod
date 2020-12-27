@@ -12,7 +12,7 @@ module.exports.authConfirmRoom = async function(req , res , next){
     const conn = await connection(dbConfig).catch(e => {});
     var sql = "SELECT landlord_id , confirm_status FROM room WHERE room_id = ? "
     var resualts = await query(conn, sql , [req.body.room_id]);
-    if (!resualts.length == 0 )
+    if (resualts.length == 0 )
     {
         conn.end();
         res.send({
